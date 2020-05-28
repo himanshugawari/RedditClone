@@ -1,6 +1,7 @@
 package in.himanshugawari.reddit.service;
 
 import java.time.Instant;
+import java.util.UUID;
 
 import javax.transaction.Transactional;
 
@@ -9,7 +10,9 @@ import org.springframework.stereotype.Service;
 
 import in.himanshugawari.reddit.dto.RegisterRequest;
 import in.himanshugawari.reddit.model.User;
+import in.himanshugawari.reddit.model.VerificationToken;
 import in.himanshugawari.reddit.repository.UserRepository;
+import in.himanshugawari.reddit.repository.VerificationTokenRepository;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -21,6 +24,8 @@ public class AuthService {
 
 	// @Autowired
 	private final UserRepository userRepository;
+	
+	private final VerificationTokenRepository verificationTokenRepository;
 
 	@Transactional
 	public void signup(RegisterRequest registerRequest) {
@@ -31,5 +36,17 @@ public class AuthService {
 		user.setUserCreated(Instant.now());
 		user.setEnabled(false);
 		userRepository.save(user);
+		
+		String token=generateVerificationToken(user);
+	}
+	
+	private String generateVerificationToken(User user) {
+		String token=UUID.randomUUID().toString();
+		VerificationToken verificationToken=new VerificationToken();
+		verificationToken.setToken(token);
+		verificationToken.setUser(user);
+		verificationTokenRepository.save(verificationToken);
+		return token;
+		
 	}
 }
