@@ -19,6 +19,7 @@ public class MailService {
 	private final JavaMailSender javaMailSender;
 	private final MailContentBuilder mailContentBuilder;
 
+	//Enable Sending mail Asynchronously
 	@Async
 	void sendMail(NotificationEmail notificationEmail) throws SpringRedditException {
 		MimeMessagePreparator mimeMessagePreparator = mimeMessage -> {
