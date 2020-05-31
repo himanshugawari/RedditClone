@@ -1,6 +1,7 @@
 package in.himanshugawari.reddit.service;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.transaction.Transactional;
@@ -9,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import in.himanshugawari.reddit.dto.RegisterRequest;
+import in.himanshugawari.reddit.exceptions.SpringRedditException;
 import in.himanshugawari.reddit.model.NotificationEmail;
 import in.himanshugawari.reddit.model.User;
 import in.himanshugawari.reddit.model.VerificationToken;
@@ -25,7 +27,7 @@ public class AuthService {
 	private final UserRepository userRepository;
 	private final VerificationTokenRepository verificationTokenRepository;
 	private final MailService mailService;
-	
+
 	@Transactional
 	public void signup(RegisterRequest registerRequest) {
 		User user = new User();
@@ -35,20 +37,36 @@ public class AuthService {
 		user.setUserCreated(Instant.now());
 		user.setEnabled(false);
 		userRepository.save(user);
-		
-		String token=generateVerificationToken(user);
-		mailService.sendMail(new NotificationEmail("Please Activate your account", user.getEmail(), "Thank you for signing up to Spring Reddit, " +
-                "please click on the below url to activate your account : " +
-                "http://localhost:8080/api/auth/accountVerification/" + token));
+
+		String token = generateVerificationToken(user);
+		mailService.sendMail(new NotificationEmail("Please Activate your account", user.getEmail(),
+				"Thank you for signing up to Spring Reddit, "
+						+ "please click on the below url to activate your account : "
+						+ "http://localhost:8080/api/auth/accountVerification/" + token));
 	}
-	
+
 	private String generateVerificationToken(User user) {
-		String token=UUID.randomUUID().toString();
-		VerificationToken verificationToken=new VerificationToken();
+		String token = UUID.randomUUID().toString();
+		VerificationToken verificationToken = new VerificationToken();
 		verificationToken.setToken(token);
 		verificationToken.setUser(user);
 		verificationTokenRepository.save(verificationToken);
 		return token;
-		
+
+	}
+
+	public void verifyAccount(String token) {
+		Optional<VerificationToken> verificationToken = verificationTokenRepository.findByToken(token);
+		verificationToken.orElseThrow(() -> new SpringRedditException("INVALID TOKEN"));
+		fetchUserAndEnable(verificationToken.get());
+	}
+
+	@Transactional
+	private void fetchUserAndEnable(VerificationToken verificationToken) {
+		String username = verificationToken.getUser().getUserName();
+		User user = userRepository.findByUserName(username)
+				.orElseThrow(() -> new SpringRedditException("User not found with name - " + username));
+		user.setEnabled(true);
+		userRepository.save(user);
 	}
 }
