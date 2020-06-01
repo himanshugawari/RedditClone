@@ -1,5 +1,7 @@
 package in.himanshugawari.reddit.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,9 +26,9 @@ public class SubredditController {
 	public ResponseEntity<SubredditDto> createSubreddit(@RequestBody SubredditDto subredditDto) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(subredditService.save(subredditDto));
 	}
-	
+
 	@GetMapping
-	public void getAllSubreddits() {
-		subredditService.getAll();		
+	public ResponseEntity<List<SubredditDto>> getAllSubreddits() {
+		return ResponseEntity.status(HttpStatus.OK).body(subredditService.getAll());
 	}
 }
