@@ -12,7 +12,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import in.himanshugawari.reddit.security.JwtAuthenticationFilter;
 import lombok.AllArgsConstructor;
 
 @Configuration
@@ -21,6 +23,7 @@ import lombok.AllArgsConstructor;
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	private final UserDetailsService userDetailsService;
+	private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
@@ -29,6 +32,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests().antMatchers("/").permitAll().and().authorizeRequests().antMatchers("/h2-console/**")
 				.permitAll();
 		// http.authorizeRequests().antMatchers("/api/auth/**").permitAll().anyRequest().authenticated();
+		http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 	}
 
 	@Autowired
