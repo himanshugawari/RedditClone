@@ -6,6 +6,7 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 
@@ -43,6 +44,19 @@ public class JwtProvider {
 		try {
 			return (PrivateKey) keyStore.getKey("himanshuKey", "himanshuPassword".toCharArray());
 		} catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException e) {
+			throw new SpringRedditException("Exception occured while retrieving public key from keystore", e);
+		}
+	}
+
+	public boolean validateToken(String jwt) {
+		Jwts.parserBuilder().setSigningKey(getPublicKey()).build().parseClaimsJws(jwt);
+		return true;
+	}
+
+	private PublicKey getPublicKey() {
+		try {
+			return (PublicKey) keyStore.getCertificate("himanshuKey").getPublicKey();
+		} catch (KeyStoreException e) {
 			throw new SpringRedditException("Exception occured while retrieving public key from keystore", e);
 		}
 	}
