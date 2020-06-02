@@ -2,6 +2,7 @@ package in.himanshugawari.reddit.mapper;
 
 import java.util.List;
 
+import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -18,4 +19,8 @@ public interface SubredditMapper {
 	default Integer mapPosts(List<Post> numberOfPosts) {
 		return numberOfPosts.size();
 	}
+	
+	@InheritInverseConfiguration
+	@Mapping(target = "posts", ignore = true)
+	Subreddit mapDtoToSubreddit(SubredditDto subredditDto);
 }
