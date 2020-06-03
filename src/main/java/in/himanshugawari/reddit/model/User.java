@@ -27,7 +27,7 @@ public class User {
 	private Long userId;
 	
 	@NotBlank(message = "Username is required")
-	private String userName;
+	private String username;
 	
 	@NotBlank(message = "Password is required")
 	private String password;
@@ -36,7 +36,9 @@ public class User {
 	@NotEmpty(message = "Email is required")
 	private String email;
 	
-	private Instant userCreated;
+	//private Instant userCreated;
+	private Instant created;
 	
-	private Boolean enabled;
+	//private Boolean enabled;
+	private boolean enabled;
 }
