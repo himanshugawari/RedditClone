@@ -37,14 +37,12 @@ public class SubredditService {
 				.collect(Collectors.toList());
 	}
 
-	/*
 	public SubredditDto getSubreddit(Long id) {
 		Subreddit subreddit = subredditRepository.findById(id)
 				.orElseThrow(() -> new SpringRedditException("No subreddit found with ID - " + id));
 		return subredditMapper.mapSubredditToDto(subreddit);
 	}
-*/
-	
+
 	// changing from normal to mapstruct mapper
 	/*
 	 * private SubredditDto mapToDto(Subreddit subreddit) { return
