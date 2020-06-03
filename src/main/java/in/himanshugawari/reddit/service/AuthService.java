@@ -4,14 +4,14 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.transaction.Transactional;
-
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import in.himanshugawari.reddit.dto.AuthenticationResponse;
 import in.himanshugawari.reddit.dto.LoginRequest;
@@ -36,14 +36,15 @@ public class AuthService {
 	private final MailService mailService;
 	private final AuthenticationManager authenticationManager;
 	private final JwtProvider jwtProvider;
+	// private final RefreshTokenService refreshTokenService;
 
 	@Transactional
 	public void signup(RegisterRequest registerRequest) {
 		User user = new User();
-		user.setUserName(registerRequest.getUsername());
+		user.setUsername(registerRequest.getUsername());
 		user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
 		user.setEmail(registerRequest.getEmail());
-		user.setUserCreated(Instant.now());
+		user.setCreated(Instant.now());
 		user.setEnabled(false);
 		userRepository.save(user);
 
@@ -72,8 +73,8 @@ public class AuthService {
 
 	@Transactional
 	private void fetchUserAndEnable(VerificationToken verificationToken) {
-		String username = verificationToken.getUser().getUserName();
-		User user = userRepository.findByUserName(username)
+		String username = verificationToken.getUser().getUsername();
+		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new SpringRedditException("User not found with name - " + username));
 		user.setEnabled(true);
 		userRepository.save(user);
@@ -86,4 +87,24 @@ public class AuthService {
 		String token = jwtProvider.generateToken(authentication);
 		return new AuthenticationResponse(token, loginRequest.getUsername());
 	}
+
+	@Transactional(readOnly = true)
+	public User getCurrentUser() {
+		org.springframework.security.core.userdetails.User principal = (org.springframework.security.core.userdetails.User) SecurityContextHolder
+				.getContext().getAuthentication().getPrincipal();
+		return userRepository.findByUsername(principal.getUsername())
+				.orElseThrow(() -> new UsernameNotFoundException("User name not found - " + principal.getUsername()));
+	}
+
+	/*
+	 * public AuthenticationResponse refreshToken(RefreshTokenRequest
+	 * refreshTokenRequest) {
+	 * refreshTokenService.validateRefreshToken(refreshTokenRequest.getRefreshToken(
+	 * )); String token =
+	 * jwtProvider.generateTokenWithUserName(refreshTokenRequest.getUsername());
+	 * return AuthenticationResponse.builder() .authenticationToken(token)
+	 * .refreshToken(refreshTokenRequest.getRefreshToken())
+	 * .expiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))
+	 * .username(refreshTokenRequest.getUsername()) .build(); }
+	 */
 }
