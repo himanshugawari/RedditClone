@@ -28,9 +28,11 @@ public class Vote {
 
 	@NotNull
 	@ManyToOne
+	// @ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "postId", referencedColumnName = "postId")
 	private Post post;
 
+	// @ManyToOne(fetch = FetchType.LAZY)
 	@ManyToOne
 	@JoinColumn(name = "userId", referencedColumnName = "userId")
 	private User user;
