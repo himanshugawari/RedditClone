@@ -72,4 +72,8 @@ public class JwtProvider {
 		Claims claims = Jwts.parserBuilder().setSigningKey(getPublicKey()).build().parseClaimsJws(token).getBody();
 		return claims.getSubject();
 	}
+	
+	public Long getJwtExpirationInMillis() {
+        return jwtExpirationInMillis;
+    }
 }
