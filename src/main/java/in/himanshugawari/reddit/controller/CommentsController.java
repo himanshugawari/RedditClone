@@ -27,12 +27,12 @@ public class CommentsController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(commentService.save(commentsDto));
 	}
 
-	@GetMapping("/by-post/{postId}")
+	@GetMapping(path = { "/by-post/{postId}" })
 	public ResponseEntity<List<CommentsDto>> getAllCommentsForPost(@PathVariable Long postId) {
 		return ResponseEntity.status(HttpStatus.OK).body(commentService.getAllCommentsForPost(postId));
 	}
 
-	@GetMapping("/by-user/{userName}")
+	@GetMapping(path = { "/by-user/{userName}" })
 	public ResponseEntity<List<CommentsDto>> getAllCommentsForUser(@PathVariable String userName) {
 		return ResponseEntity.status(HttpStatus.OK).body(commentService.getAllCommentsForUser(userName));
 	}
