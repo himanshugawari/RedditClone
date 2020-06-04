@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import in.himanshugawari.reddit.dto.AuthenticationResponse;
 import in.himanshugawari.reddit.dto.LoginRequest;
+import in.himanshugawari.reddit.dto.RefreshTokenRequest;
 import in.himanshugawari.reddit.dto.RegisterRequest;
 import in.himanshugawari.reddit.exceptions.SpringRedditException;
 import in.himanshugawari.reddit.model.NotificationEmail;
@@ -36,7 +37,7 @@ public class AuthService {
 	private final MailService mailService;
 	private final AuthenticationManager authenticationManager;
 	private final JwtProvider jwtProvider;
-	// private final RefreshTokenService refreshTokenService;
+	private final RefreshTokenService refreshTokenService;
 
 	@Transactional
 	public void signup(RegisterRequest registerRequest) {
@@ -99,15 +100,13 @@ public class AuthService {
 				.orElseThrow(() -> new UsernameNotFoundException("User name not found - " + principal.getUsername()));
 	}
 
-	/*
-	 * public AuthenticationResponse refreshToken(RefreshTokenRequest
-	 * refreshTokenRequest) {
-	 * refreshTokenService.validateRefreshToken(refreshTokenRequest.getRefreshToken(
-	 * )); String token =
-	 * jwtProvider.generateTokenWithUserName(refreshTokenRequest.getUsername());
-	 * return AuthenticationResponse.builder() .authenticationToken(token)
-	 * .refreshToken(refreshTokenRequest.getRefreshToken())
-	 * .expiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))
-	 * .username(refreshTokenRequest.getUsername()) .build(); }
-	 */
+	public AuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
+		refreshTokenService.validateRefreshToken(refreshTokenRequest.getRefreshToken());
+		String token = jwtProvider.generateTokenWithUserName(refreshTokenRequest.getUsername());
+		return AuthenticationResponse.builder().authenticationToken(token)
+				.refreshToken(refreshTokenRequest.getRefreshToken())
+				.expiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))
+				.username(refreshTokenRequest.getUsername()).build();
+	}
+
 }
