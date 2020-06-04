@@ -44,7 +44,13 @@ public class JwtProvider {
 
 	public String generateToken(Authentication authentication) {
 		User principal = (User) authentication.getPrincipal();
-		return Jwts.builder().setSubject(principal.getUsername()).signWith(getPrivateKey()).setExpiration(Date.from(Instant.now().plusMillis(jwtExpirationInMillis))).compact();
+		return Jwts.builder().setSubject(principal.getUsername()).signWith(getPrivateKey())
+				.setExpiration(Date.from(Instant.now().plusMillis(jwtExpirationInMillis))).compact();
+	}
+
+	public String generateTokenWithUserName(String username) {
+		return Jwts.builder().setSubject(username).setIssuedAt(Date.from(Instant.now())).signWith(getPrivateKey())
+				.setExpiration(Date.from(Instant.now().plusMillis(jwtExpirationInMillis))).compact();
 	}
 
 	private PrivateKey getPrivateKey() {
@@ -72,8 +78,8 @@ public class JwtProvider {
 		Claims claims = Jwts.parserBuilder().setSigningKey(getPublicKey()).build().parseClaimsJws(token).getBody();
 		return claims.getSubject();
 	}
-	
+
 	public Long getJwtExpirationInMillis() {
-        return jwtExpirationInMillis;
-    }
+		return jwtExpirationInMillis;
+	}
 }
