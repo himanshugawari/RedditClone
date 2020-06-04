@@ -1,5 +1,7 @@
 package in.himanshugawari.reddit.controller;
 
+import javax.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,8 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import in.himanshugawari.reddit.dto.AuthenticationResponse;
 import in.himanshugawari.reddit.dto.LoginRequest;
+import in.himanshugawari.reddit.dto.RefreshTokenRequest;
 import in.himanshugawari.reddit.dto.RegisterRequest;
 import in.himanshugawari.reddit.service.AuthService;
+import in.himanshugawari.reddit.service.RefreshTokenService;
 import lombok.AllArgsConstructor;
 
 @RestController
@@ -21,6 +25,7 @@ import lombok.AllArgsConstructor;
 public class AuthController {
 
 	private final AuthService authService;
+	private final RefreshTokenService refreshTokenService;
 
 	@PostMapping(path = { "/signup" })
 	public ResponseEntity<String> signup(@RequestBody RegisterRequest registerRequest) {
@@ -38,15 +43,16 @@ public class AuthController {
 	public AuthenticationResponse login(@RequestBody LoginRequest loginRequest) {
 		return authService.login(loginRequest);
 	}
-	/*
-	 * @PostMapping(path = { "/refresh/token" }) public AuthenticationResponse
-	 * refreshTokens(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
-	 * return authService.refreshToken(refreshTokenRequest); }
-	 * 
-	 * @PostMapping(path = { "/logout" }) public ResponseEntity<String>
-	 * logout(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
-	 * refreshTokenService.deleteRefreshToken(refreshTokenRequest.getRefreshToken())
-	 * ; return
-	 * ResponseEntity.status(OK).body("Refresh Token Deleted Successfully!!"); }
-	 */
+
+	@PostMapping(path = { "/refresh/token" })
+	public AuthenticationResponse refreshTokens(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
+		return authService.refreshToken(refreshTokenRequest);
+	}
+
+	@PostMapping(path = { "/logout" })
+	public ResponseEntity<String> logout(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
+		refreshTokenService.deleteRefreshToken(refreshTokenRequest.getRefreshToken());
+		return ResponseEntity.status(HttpStatus.OK).body("Refresh Token Deleted Successfully!!");
+	}
+
 }
