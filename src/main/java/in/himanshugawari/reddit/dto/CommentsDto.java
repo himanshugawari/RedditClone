@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CommentsDto {
+	
 	private Long id;
 	private Long postId;
 	private Instant createdDate;
