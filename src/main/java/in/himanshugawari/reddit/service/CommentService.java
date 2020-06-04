@@ -32,7 +32,7 @@ public class CommentService {
 	private final MailService mailService;
 
 	public CommentsDto save(CommentsDto commentsDto) {
-		Post post = postRepository.findById(commentsDto.getId())
+		Post post = postRepository.findById(commentsDto.getPostId())
 				.orElseThrow(() -> new PostNotFoundException(commentsDto.getPostId().toString()));
 		Comment comment = commentMapper.map(commentsDto, post, authService.getCurrentUser());
 		commentRepository.save(comment);
@@ -43,6 +43,18 @@ public class CommentService {
 
 		return commentMapper.mapToDto(comment);
 	}
+
+	/*
+	 * public void save(CommentsDto commentsDto) { Post post =
+	 * postRepository.findById(commentsDto.getPostId()) .orElseThrow(() -> new
+	 * PostNotFoundException(commentsDto.getPostId().toString())); Comment comment =
+	 * commentMapper.map(commentsDto, post, authService.getCurrentUser());
+	 * commentRepository.save(comment);
+	 * 
+	 * String message = mailContentBuilder .build(post.getUser().getUsername() +
+	 * " posted a comment on your post." + POST_URL);
+	 * sendCommentNotification(message, post.getUser()); }
+	 */
 
 	private void sendCommentNotification(String message, User user) {
 		mailService.sendMail(
