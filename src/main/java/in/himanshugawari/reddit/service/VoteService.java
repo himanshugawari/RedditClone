@@ -39,7 +39,7 @@ public class VoteService {
 	 */
 	
 	@Transactional
-	public Optional<Vote> vote(VoteDto voteDto) {
+	public String vote(VoteDto voteDto) {
 		Post post = postRepository.findById(voteDto.getPostId())
 				.orElseThrow(() -> new PostNotFoundException("Post Not Found with ID - " + voteDto.getPostId()));
 		Optional<Vote> voteByPostAndUser = voteRepository.findTopByPostAndUserOrderByVoteIdDesc(post,
@@ -52,10 +52,11 @@ public class VoteService {
 		} else {
 			post.setVoteCount(post.getVoteCount() - 1);
 		}
-		voteRepository.save(mapToVote(voteDto, post));
+		Vote mapToVote = mapToVote(voteDto, post);
+		voteRepository.save(mapToVote);
 		postRepository.save(post);
 		
-		return voteByPostAndUser;
+		return mapToVote.getVoteId().toString();
 	}
 
 	private Vote mapToVote(VoteDto voteDto, Post post) {
