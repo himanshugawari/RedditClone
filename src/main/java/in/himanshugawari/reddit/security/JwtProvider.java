@@ -9,6 +9,8 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+import java.time.Instant;
+import java.util.Date;
 
 import javax.annotation.PostConstruct;
 
@@ -42,7 +44,7 @@ public class JwtProvider {
 
 	public String generateToken(Authentication authentication) {
 		User principal = (User) authentication.getPrincipal();
-		return Jwts.builder().setSubject(principal.getUsername()).signWith(getPrivateKey()).compact();
+		return Jwts.builder().setSubject(principal.getUsername()).signWith(getPrivateKey()).setExpiration(Date.from(Instant.now().plusMillis(jwtExpirationInMillis))).compact();
 	}
 
 	private PrivateKey getPrivateKey() {
