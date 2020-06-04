@@ -27,6 +27,12 @@ public class CommentsController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(commentService.save(commentsDto));
 	}
 
+	/*
+	 * @PostMapping public ResponseEntity<Void> createComment(@RequestBody
+	 * CommentsDto commentsDto) { commentService.save(commentsDto); return new
+	 * ResponseEntity<>(HttpStatus.CREATED); }
+	 */
+
 	@GetMapping(path = { "/by-post/{postId}" })
 	public ResponseEntity<List<CommentsDto>> getAllCommentsForPost(@PathVariable Long postId) {
 		return ResponseEntity.status(HttpStatus.OK).body(commentService.getAllCommentsForPost(postId));
