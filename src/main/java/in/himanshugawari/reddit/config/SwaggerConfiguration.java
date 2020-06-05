@@ -27,4 +27,15 @@ public class SwaggerConfiguration {
 				.contact(new Contact("Himanshu Gawari", "https://himanshu-gawari.in", "himanshu25031991@gmail.com"))
 				.license("Apache License Version 2.0").build();
 	}
+
+	/*
+	 * 
+	 * @Bean public LinkDiscoverers discoverers() { List<LinkDiscoverer> plugins =
+	 * new ArrayList<>(); plugins.add(new HalLinkDiscoverer()); return new
+	 * LinkDiscoverers(SimplePluginRegistry.create(plugins)); }
+	 * 
+	 * @Bean public LinkRelationProvider provider() { return new
+	 * EvoInflectorLinkRelationProvider(); }
+	 * 
+	 */
 }
