@@ -1,16 +1,14 @@
 package in.himanshugawari.reddit;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
-@RunWith(value = SpringRunner.class)
+//@RunWith(value = SpringRunner.class)
 @SpringBootTest
-class RedditApplicationTests {
+public class RedditApplicationTests {
 
 	@Test
-	void contextLoads() {
+	public void contextLoads() {
 	}
 
 }
